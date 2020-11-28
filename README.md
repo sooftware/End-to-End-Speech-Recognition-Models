@@ -10,21 +10,21 @@ I will continue to add to this the speech recognition models that I implement.
   
 - Deep Speech 2  
 *Dario Amodei et al. [Deep Speech2: End-to-End Speech Recognition in English and Mandarin](https://arxiv.org/abs/1512.02595)*   
-*[SeanNaren/deepspeech.pytorch](https://github.com/SeanNaren/deepspeech.pytorch)*
+*SeanNaren. [deepspeech.pytorch](https://github.com/SeanNaren/deepspeech.pytorch)*
   
 - Listen, Attend and Spell (modified version)   
 *Wiliam Chan et al. [Listen, Attend and Spell](https://arxiv.org/abs/1508.01211)*   
 *Takaaki Hori et al. [Advances in Joint CTC-Attention based E2E ASR with a Deep CNN Encoder and RNN-LM](https://arxiv.org/abs/1706.02737)*   
-*[IBM/Pytorch-seq2seq](https://github.com/IBM/pytorch-seq2seq)*  
-*[clovaai/ClovaCall](https://github.com/clovaai/ClovaCall)*
+*IBM. [Pytorch-seq2seq](https://github.com/IBM/pytorch-seq2seq)*  
+*clovaai. [ClovaCall](https://github.com/clovaai/ClovaCall)*
   
 - Speech Transformer  
 *Ashish Vaswani et al. [Attention Is All You Need](https://arxiv.org/abs/1706.03762)*     
 *Yuanyuan Zhao et al. [The SpeechTransformer for Large-scale Mandarin Chinese Speech Recognition](https://ieeexplore.ieee.org/document/8682586)*  
-*[kaituoxu/Speech-Transformer](https://github.com/kaituoxu/Speech-Transformer)*
+*kaituoxu. [Speech-Transformer](https://github.com/kaituoxu/Speech-Transformer)*
   
 - Voice Activity Detection (1 dimensional Resnet Model)   
-*[filippogiruzzi/voice_activity_detection](https://github.com/filippogiruzzi/voice_activity_detection)*
+*filippogiruzzi. [voice_activity_detection](https://github.com/filippogiruzzi/voice_activity_detection)*
   
 ## Troubleshoots and Contributing
 If you have any questions, bug reports, and feature requests, please [open an issue](https://github.com/sooftware/End-to-end-Speech-Recognition/issues) on Github.   
