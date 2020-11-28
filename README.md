@@ -2,7 +2,8 @@
   
 [<img src="https://github.com/gentaiscool/end2end-asr-pytorch/raw/master/img/pytorch-logo-dark.png" height=18>](https://pytorch.org/) <img src="https://img.shields.io/badge/License-Apache--2.0-yellow" height=20>
   
-This repository contains end-to-end automatic speech recognition models.This repository does not include training or audio or text preprocessing codes. If you want to see the code other than the model, please refer to [here](https://github.com/sooftware/KoSpeech). Many speech recognition open sources contain all the training-related code, making it hard to see only the model structure. So I have created a repository for only the models I've implemented and make them public. I will continue to add to this the speech recognition models that I implement.  
+This repository contains end-to-end automatic speech recognition models.This repository does not include training or audio or text preprocessing codes. If you want to see the code other than the model, please refer to [here](https://github.com/sooftware/KoSpeech).   
+Many speech recognition open sources contain all the training-related code, making it hard to see only the model structure. So I have created a repository for only the models I've implemented and make them public. I will continue to add to this the speech recognition models that I implement.  
   
 ## Implementation List  
   
