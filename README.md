@@ -9,8 +9,20 @@ I will continue to add to this the speech recognition models that I implement.
 ## Implementation List  
   
 - Deep Speech 2  
-- Listen, Attend and Spell (modified version) 
+*Dario Amodei et al. [Deep Speech2: End-to-End Speech Recognition in English and Mandarin](https://arxiv.org/abs/1512.02595) arXiv: 1512.02595*   
+*[SeanNaren/deepspeech.pytorch](https://github.com/SeanNaren/deepspeech.pytorch)*
+  
+- Listen, Attend and Spell (modified version)   
+*Wiliam Chan et al. [Listen, Attend and Spell](https://arxiv.org/abs/1508.01211) arXiv: 1508.01211*   
+*Takaaki Hori et al. [Advances in Joint CTC-Attention based E2E ASR with a Deep CNN Encoder and RNN-LM](https://arxiv.org/abs/1706.02737) arXiv: 1706.02737*   
+*[IBM/Pytorch-seq2seq](https://github.com/IBM/pytorch-seq2seq)*  
+*[clovaai/ClovaCall](https://github.com/clovaai/ClovaCall)*
+  
 - Speech Transformer  
+*Ashish Vaswani et al. [Attention Is All You Need](https://arxiv.org/abs/1706.03762) arXiv: 1706.03762*     
+*Yuanyuan Zhao et al. [The SpeechTransformer for Large-scale Mandarin Chinese Speech Recognition](https://ieeexplore.ieee.org/document/8682586) ICASSP 2019.*  
+*[kaituoxu/Speech-Transformer](https://github.com/kaituoxu/Speech-Transformer)*
+  
 - Voice Activity Detection (1 dimensional Resnet Model)
   
 ## Troubleshoots and Contributing
@@ -20,30 +32,6 @@ I appreciate any kind of feedback or contribution.  Feel free to proceed with sm
   
 ### Code Style
 I follow [PEP-8](https://www.python.org/dev/peps/pep-0008/) for code style. Especially the style of docstrings is important to generate documentation.  
-    
-### Paper References
-  
-*Wiliam Chan et al. [Listen, Attend and Spell](https://arxiv.org/abs/1508.01211) arXiv: 1508.01211*   
-   
-*Dario Amodei et al. [Deep Speech2: End-to-End Speech Recognition in English and Mandarin](https://arxiv.org/abs/1512.02595) arXiv: 1512.02595*   
-   
-*Takaaki Hori et al. [Advances in Joint CTC-Attention based E2E Automatic Speech Recognition with a Deep CNN Encoder and RNN-LM](https://arxiv.org/abs/1706.02737) arXiv: 1706.02737*   
-  
-*Ashish Vaswani et al. [Attention Is All You Need](https://arxiv.org/abs/1706.03762) arXiv: 1706.03762*     
-  
-*Chung-Cheng Chiu et al. [State-of-the-art Speech Recognition with Sequence-to-Sequence Models](https://arxiv.org/abs/1712.01769) arXiv: 1712.01769*   
-    
-### Github References
-  
-*[sooftware/KoSpeech](https://github.com/sooftware/KoSpeech)*
-  
-*[IBM/Pytorch-seq2seq](https://github.com/IBM/pytorch-seq2seq)*  
-  
-*[SeanNaren/deepspeech.pytorch](https://github.com/SeanNaren/deepspeech.pytorch)*  
-  
-*[kaituoxu/Speech-Transformer](https://github.com/kaituoxu/Speech-Transformer)*  
-  
-*[clovaai/ClovaCall](https://github.com/clovaai/ClovaCall)*  
    
 ### License
 This project is licensed under the Apache-2.0 LICENSE - see the [LICENSE.md](https://github.com/sooftware/End-to-End-Speech-Recognition-Models/blob/main/LICENSE) file for details
