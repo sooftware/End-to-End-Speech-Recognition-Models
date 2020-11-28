@@ -43,8 +43,6 @@ I follow [PEP-8](https://www.python.org/dev/peps/pep-0008/) for code style. Espe
   
 *[kaituoxu/Speech-Transformer](https://github.com/kaituoxu/Speech-Transformer)*  
   
-*[OpenNMT/OpenNMT-py](https://github.com/OpenNMT/OpenNMT-py)*  
-  
 *[clovaai/ClovaCall](https://github.com/clovaai/ClovaCall)*  
    
 ### License
