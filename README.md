@@ -1,4 +1,7 @@
-# End-to-End Speech Recognition Models
+# End-to-End Speech Recognition Models  
+  
+[<img src="https://github.com/gentaiscool/end2end-asr-pytorch/raw/master/img/pytorch-logo-dark.png" height=18>](https://pytorch.org/) <img src="https://img.shields.io/badge/License-Apache--2.0-yellow" height=20>
+  
 This repository contains end-to-end automatic speech recognition models.This repository does not include training or audio or text preprocessing codes. If you want to see the code other than the model, please refer to [here](https://github.com/sooftware/KoSpeech). Many speech recognition open sources contain all the training-related code, making it hard to see only the model structure. So I have created a repository for only the models I've implemented and make them public. I will continue to add to this the speech recognition models that I implement.  
   
 ## Implementation List  
@@ -30,7 +33,7 @@ I follow [PEP-8](https://www.python.org/dev/peps/pep-0008/) for code style. Espe
     
 ### Github References
   
-*[sooftware/KoSpeech](https://github.com/sooftware/KoSpeech)
+*[sooftware/KoSpeech](https://github.com/sooftware/KoSpeech)*
   
 *[IBM/Pytorch-seq2seq](https://github.com/IBM/pytorch-seq2seq)*  
   
@@ -43,7 +46,7 @@ I follow [PEP-8](https://www.python.org/dev/peps/pep-0008/) for code style. Espe
 *[clovaai/ClovaCall](https://github.com/clovaai/ClovaCall)*  
    
 ### License
-This project is licensed under the Apache-2.0 LICENSE - see the [LICENSE.md](https://github.com/sooftware/KoSpeech/blob/master/LICENSE) file for details
+This project is licensed under the Apache-2.0 LICENSE - see the [LICENSE.md](https://github.com/sooftware/End-to-End-Speech-Recognition-Models/blob/main/LICENSE) file for details
   
 ## Author
   
