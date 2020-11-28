@@ -1,34 +1,27 @@
 # -*- coding: utf-8 -*-
-# Soohwan Kim, Seyoung Bae, Cheolhwang Won.
-# @ArXiv : KoSpeech: Open-Source Toolkit for End-to-End Korean Speech Recognition
+# Soohwan Kim @ https://github.com/sooftware/
 # This source code is licensed under the Apache 2.0 License license found in the
 # LICENSE file in the root directory of this source tree.
-
-#  Reference :
-#    - **https://github.com/graykode/nlp-tutorial**
-#    - **https://github.com/dreamgonfly/transformer-pytorch**
-#    - **https://github.com/jadore801120/attention-is-all-you-need-pytorch**
-#    - **https://github.com/JayParks/transformer**
 
 import math
 import torch
 import torch.nn as nn
 from torch import Tensor
 from typing import Optional, Any
-from kospeech.models.modules import (
+from modules import (
     Linear,
     LayerNorm
 )
-from kospeech.models.transformer.mask import (
+from transformer.mask import (
     get_pad_mask,
     get_attn_pad_mask,
     get_decoder_self_attn_mask
 )
-from kospeech.models.transformer.embeddings import (
+from transformer.embeddings import (
     Embedding,
     PositionalEncoding
 )
-from kospeech.models.transformer.layers import (
+from transformer.layers import (
     SpeechTransformerEncoderLayer,
     SpeechTransformerDecoderLayer
 )

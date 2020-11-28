@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-# Soohwan Kim, Seyoung Bae, Cheolhwang Won.
-# @ArXiv : KoSpeech: Open-Source Toolkit for End-to-End Korean Speech Recognition
+# Soohwan Kim @ https://github.com/sooftware/
 # This source code is licensed under the Apache 2.0 License license found in the
 # LICENSE file in the root directory of this source tree.
 
@@ -9,12 +8,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from kospeech.models.modules import Linear
-from kospeech.models.modules import BaseRNN
-from kospeech.models.transformer.sublayers import AddNorm
+from modules import Linear
+from modules import BaseRNN
+from transformer.sublayers import AddNorm
 from torch import Tensor, LongTensor
 from typing import Optional, Any, Tuple
-from kospeech.models.attention import (
+from attention import (
     LocationAwareAttention,
     MultiHeadAttention,
     AdditiveAttention,
