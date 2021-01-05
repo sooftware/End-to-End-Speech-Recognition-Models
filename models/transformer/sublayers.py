@@ -5,7 +5,10 @@
 
 import torch.nn as nn
 from torch import Tensor
-from modules import Linear, LayerNorm
+from models.modules import (
+    Linear,
+    LayerNorm
+)
 
 
 class AddNorm(nn.Module):

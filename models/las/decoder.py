@@ -8,12 +8,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from modules import Linear
-from modules import BaseRNN
-from transformer.sublayers import AddNorm
 from torch import Tensor, LongTensor
 from typing import Optional, Any, Tuple
-from attention import (
+from models.modules import Linear, BaseRNN
+from models.attention import (
     LocationAwareAttention,
     MultiHeadAttention,
     AdditiveAttention,
@@ -49,31 +47,24 @@ class Speller(BaseRNN):
           teacher forcing would be used (default is 0).
         - **return_decode_dict** (dict): dictionary which contains decode informations.
 
-    Returns: decoder_outputs, decode_dict
-        - **decoder_outputs** (seq_len, batch, num_classes): list of tensors containing
-          the outputs of the decoding function.
-        - **decode_dict**: dictionary containing additional information as follows {*KEY_ATTENTION_SCORE* : list of scores
-          representing encoder outputs, *KEY_SEQUENCE_SYMBOL* : list of sequences, where each sequence is a list of
-          predicted token IDs }.
+    Returns: decoder_outputs
+        - **decoder_outputs**: dictionary contains decoder outputs and metadata the outputs of the decoding function.
     """
-    KEY_ATTENTION_SCORE = 'attention_score'
-    KEY_LENGTH = 'length'
-    KEY_SEQUENCE_SYMBOL = 'sequence_symbol'
 
     def __init__(
             self,
-            num_classes: int,                      # number of classfication
-            max_length: int = 150,                 # a maximum allowed length for the sequence to be processed
-            hidden_dim: int = 1024,                # dimension of RNN`s hidden state vector
-            pad_id: int = 0,                       # pad token`s id
-            sos_id: int = 1,                       # start of sentence token`s id
-            eos_id: int = 2,                       # end of sentence token`s id
-            attn_mechanism: str = 'multi-head',    # type of attention mechanism
-            num_heads: int = 4,                    # number of attention heads
-            num_layers: int = 2,                   # number of RNN layers
-            rnn_type: str = 'lstm',                # type of RNN cell
-            dropout_p: float = 0.3,                # dropout probability
-            device: str = 'cuda'                   # device - 'cuda' or 'cpu'
+            num_classes: int,                        # number of classfication
+            max_length: int = 150,                   # a maximum allowed length for the sequence to be processed
+            hidden_dim: int = 1024,                  # dimension of RNN`s hidden state vector
+            pad_id: int = 0,                         # pad token`s id
+            sos_id: int = 1,                         # start of sentence token`s id
+            eos_id: int = 2,                         # end of sentence token`s id
+            attn_mechanism: str = 'multi-head',      # type of attention mechanism
+            num_heads: int = 4,                      # number of attention heads
+            num_layers: int = 2,                     # number of RNN layers
+            rnn_type: str = 'lstm',                  # type of RNN cell
+            dropout_p: float = 0.3,                  # dropout probability
+            device: str = 'cuda'                     # device - 'cuda' or 'cpu'
     ) -> None:
         super(Speller, self).__init__(hidden_dim, hidden_dim, num_layers, rnn_type, dropout_p, False, device)
         self.num_classes = num_classes
@@ -88,18 +79,18 @@ class Speller(BaseRNN):
         self.input_dropout = nn.Dropout(dropout_p)
 
         if self.attn_mechanism == 'loc':
-            self.attention = AddNorm(LocationAwareAttention(hidden_dim, smoothing=True), hidden_dim)
+            self.attention = LocationAwareAttention(decoder_dim=hidden_dim, attn_dim=hidden_dim, smoothing=False)
         elif self.attn_mechanism == 'multi-head':
-            self.attention = AddNorm(MultiHeadAttention(hidden_dim, num_heads), hidden_dim)
+            self.attention = MultiHeadAttention(d_model=hidden_dim, num_heads=num_heads)
         elif self.attn_mechanism == 'additive':
             self.attention = AdditiveAttention(hidden_dim)
         elif self.attn_mechanism == 'scaled-dot':
-            self.attention = AddNorm(ScaledDotProductAttention(hidden_dim), hidden_dim)
+            self.attention = ScaledDotProductAttention(dim=hidden_dim)
         else:
             raise ValueError("Unsupported attention: %s".format(attn_mechanism))
 
-        self.projection = AddNorm(Linear(hidden_dim, hidden_dim, bias=True), hidden_dim)
-        self.generator = Linear(hidden_dim, num_classes, bias=False)
+        self.fc1 = Linear(hidden_dim << 1, hidden_dim)
+        self.fc2 = Linear(hidden_dim, num_classes)
 
     def forward_step(
             self,
@@ -107,7 +98,7 @@ class Speller(BaseRNN):
             hidden: Optional[Any],              # tensor containing hidden state vector of RNN
             encoder_outputs: Tensor,            # tensor with containing the outputs of the encoder
             attn: Optional[Any] = None          # tensor containing attention distribution
-    ) -> Tuple[Tensor, Optional[Any], Tensor]:
+    ) -> Tuple[Tensor, Tensor, Tensor]:
         batch_size, output_lengths = input_var.size(0), input_var.size(1)
 
         embedded = self.embedding(input_var).to(self.device)
@@ -123,8 +114,10 @@ class Speller(BaseRNN):
         else:
             context, attn = self.attention(output, encoder_outputs, encoder_outputs)
 
-        output = self.projection(context.view(-1, self.hidden_dim)).view(batch_size, -1, self.hidden_dim)
-        output = self.generator(torch.tanh(output).contiguous().view(-1, self.hidden_dim))
+        context = torch.cat((output, context), dim=2)
+
+        output = self.fc1(context.view(-1, self.hidden_dim << 1)).view(batch_size, -1, self.hidden_dim)
+        output = self.fc2(torch.tanh(output).contiguous().view(-1, self.hidden_dim))
 
         step_output = F.log_softmax(output, dim=1)
         step_output = step_output.view(batch_size, output_lengths, -1).squeeze(1)
@@ -135,18 +128,16 @@ class Speller(BaseRNN):
             self,
             inputs: Tensor,                         # tensor of sequences whose contains target variables
             encoder_outputs: Tensor,                # tensor with containing the outputs of the encoder
-            teacher_forcing_ratio: float = 1.0,     # the probability that teacher forcing will be used
-            return_decode_dict: bool = False        # flag indication whether return decode_dict or not
-    ) -> Tuple[Tensor, dict]:
+            teacher_forcing_ratio: float = 1.0      # probability that teacher forcing will be used.
+    ) -> dict:
 
         hidden, attn = None, None
-        result, decode_dict = list(), dict()
+        decoder_outputs = dict()
+        decoder_outputs["decoder_log_probs"] = list()
+        decoder_outputs["attention_score"] = list()
+        decoder_outputs["sequence_symbol"] = list()
 
-        if not self.training:
-            decode_dict[Speller.KEY_ATTENTION_SCORE] = list()
-            decode_dict[Speller.KEY_SEQUENCE_SYMBOL] = list()
-
-        inputs, batch_size, max_length = self.validate_args(inputs, encoder_outputs, teacher_forcing_ratio)
+        inputs, batch_size, max_length = self._validate_args(inputs, encoder_outputs, teacher_forcing_ratio)
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
         lengths = np.array([max_length] * batch_size)
 
@@ -157,42 +148,36 @@ class Speller(BaseRNN):
                 for di in range(inputs.size(1)):
                     input_var = inputs[:, di].unsqueeze(1)
                     step_output, hidden, attn = self.forward_step(input_var, hidden, encoder_outputs, attn)
-                    result.append(step_output)
+                    decoder_outputs["decoder_log_probs"].append(step_output)
 
             else:
                 step_outputs, hidden, attn = self.forward_step(inputs, hidden, encoder_outputs, attn)
 
                 for di in range(step_outputs.size(1)):
                     step_output = step_outputs[:, di, :]
-                    result.append(step_output)
+                    decoder_outputs["decoder_log_probs"].append(step_output)
 
         else:
             input_var = inputs[:, 0].unsqueeze(1)
 
             for di in range(max_length):
                 step_output, hidden, attn = self.forward_step(input_var, hidden, encoder_outputs, attn)
-                result.append(step_output)
-                input_var = result[-1].topk(1)[1]
+                decoder_outputs["decoder_log_probs"].append(step_output)
+                input_var = decoder_outputs["decoder_log_probs"][-1].topk(1)[1]
 
                 if not self.training:
-                    decode_dict[Speller.KEY_ATTENTION_SCORE].append(attn)
-                    decode_dict[Speller.KEY_SEQUENCE_SYMBOL].append(input_var)
+                    decoder_outputs["attention_score"].append(attn)
+                    decoder_outputs["sequence_symbol"].append(input_var)
                     eos_batches = input_var.data.eq(self.eos_id)
 
                     if eos_batches.dim() > 0:
                         eos_batches = eos_batches.cpu().view(-1).numpy()
                         update_idx = ((lengths > di) & eos_batches) != 0
-                        lengths[update_idx] = len(decode_dict[Speller.KEY_SEQUENCE_SYMBOL])
+                        lengths[update_idx] = len(decoder_outputs["sequence_symbol"])
 
-        if return_decode_dict:
-            decode_dict[Speller.KEY_LENGTH] = lengths
-            result = (result, decode_dict)
-        else:
-            del decode_dict
+        return decoder_outputs
 
-        return result
-
-    def validate_args(
+    def _validate_args(
             self,
             inputs: Optional[Any] = None,           # tensor of sequences whose contains target variables
             encoder_outputs: Tensor = None,         # tensor with containing the outputs of the encoder
