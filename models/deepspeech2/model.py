@@ -9,13 +9,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 from typing import Tuple
-from extractor import DeepSpeech2Extractor
-from modules import Linear, BNReluRNN
+from models.extractor import DeepSpeech2Extractor
+from models.modules import Linear, BNReluRNN
 
 
 class DeepSpeech2(nn.Module):
     """
-    Deep Speech2 architecture with configurable encoder and decoder.
+    Deep Speech2 model with configurable encoder and decoder.
     Paper: https://arxiv.org/abs/1512.02595
 
     Args:
@@ -46,7 +46,7 @@ class DeepSpeech2(nn.Module):
             dropout_p: float = 0.1,                 # dropout probability
             bidirectional: bool = True,             # if True, becomes a bidirectional rnn
             activation: str = 'hardtanh',           # type of activation function
-            device: str = 'cuda'                    # device - 'cuda' or 'cpu'
+            device: torch.device = 'cuda'           # device - 'cuda' or 'cpu'
     ):
         super(DeepSpeech2, self).__init__()
         self.rnn_layers = list()
@@ -92,8 +92,7 @@ class DeepSpeech2(nn.Module):
 
         return output, output_lengths
 
-    def greedy_decode(self, inputs: Tensor, input_lengths: Tensor, device: str):
+    def greedy_search(self, inputs: Tensor, input_lengths: Tensor, device: str):
         with torch.no_grad():
-            output = self.forward(inputs, input_lengths)
-            logit = torch.stack(output, dim=1).to(device)
-            return logit.max(-1)[1]
+            output, output_lengths = self.forward(inputs, input_lengths)
+            return output.max(-1)[1]

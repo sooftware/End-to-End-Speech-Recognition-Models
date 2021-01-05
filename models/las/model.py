@@ -6,13 +6,13 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from las.topk_decoder import TopKDecoder
-from typing import Optional, Any
+from models import TopKDecoder
+from typing import Optional, Tuple
 
 
 class ListenAttendSpell(nn.Module):
     """
-    Listen, Attend and Spell architecture with configurable encoder and decoder.
+    Listen, Attend and Spell model with configurable encoder and decoder.
 
     Args:
         encoder (torch.nn.Module): encoder of las
@@ -39,31 +39,29 @@ class ListenAttendSpell(nn.Module):
 
     def forward(
             self,
-            inputs: Tensor,                         # tensor of sequences whose contains input variables
-            input_lengths: Tensor,                  # tensor of sequences whose contains lengths of inputs
-            targets: Optional[Any] = None,          # tensor of sequences whose contains target variables
-            teacher_forcing_ratio: float = 1.0,     # the probability that teacher forcing will be used
-            return_decode_dict: bool = False        # flag indication whether return decode_dict or not
-    ):
-        output, hidden = self.encoder(inputs, input_lengths)
+            inputs: Tensor,                             # tensor contains audio's features
+            input_lengths: Tensor,                      # tensor contains feature's lengths
+            targets: Optional[Tensor] = None,           # tensor contains target sentences
+            teacher_forcing_ratio: float = 1.0          # ratio of teacher forcing
+    ) -> Tuple[dict, Tensor, Tensor]:
+        encoder_outputs, encoder_log_probs, encoder_output_lengths = self.encoder(inputs, input_lengths)
 
         if isinstance(self.decoder, TopKDecoder):
-            result = self.decoder(targets, output)
-        else:
-            result = self.decoder(targets, output, teacher_forcing_ratio, return_decode_dict)
+            return self.decoder(targets, encoder_outputs)
+        decoder_outputs = self.decoder(targets, encoder_outputs, teacher_forcing_ratio)
 
-        return result
+        return decoder_outputs, encoder_log_probs, encoder_output_lengths
 
-    def greedy_decode(self, inputs: Tensor, input_lengths: Tensor, device: str):
+    def greedy_search(self, inputs: Tensor, input_lengths: Tensor, device: str) -> Tensor:
         with torch.no_grad():
             self.flatten_parameters()
-            output = self.forward(inputs, input_lengths, teacher_forcing_ratio=0.0, return_decode_dict=False)
-            logit = torch.stack(output, dim=1).to(device)
-            return logit.max(-1)[1]
+            decoder_outputs, _, _ = self.forward(inputs, input_lengths, teacher_forcing_ratio=0.0)
+            output = torch.stack(decoder_outputs['decoder_log_probs'], dim=1).to(device)
+            return output.max(-1)[1]
 
-    def flatten_parameters(self):
+    def flatten_parameters(self) -> None:
         self.encoder.rnn.flatten_parameters()
         self.decoder.rnn.flatten_parameters()
 
-    def set_decoder(self, decoder: nn.Module):
+    def set_decoder(self, decoder: nn.Module) -> None:
         self.decoder = decoder

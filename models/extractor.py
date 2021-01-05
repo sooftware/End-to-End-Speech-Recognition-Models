@@ -125,13 +125,8 @@ class DeepSpeech2Extractor(CNNExtractor):
 
     def forward(self, inputs: Tensor, input_lengths: Tensor) -> Optional[Any]:
         if self.mask_conv:
-            conv_feat, seq_lengths = self.conv(inputs, input_lengths)
-            output = conv_feat, seq_lengths
-        else:
-            conv_feat = self.conv(inputs)
-            output = conv_feat
-
-        return output
+            return self.conv(inputs, input_lengths)
+        return self.conv(inputs)
 
 
 class VGGExtractor(CNNExtractor):
@@ -140,7 +135,7 @@ class VGGExtractor(CNNExtractor):
     "Advances in Joint CTC-Attention based End-to-End Speech Recognition with a Deep CNN Encoder and RNN-LM" paper
     - https://arxiv.org/pdf/1706.02737.pdf
     """
-    def __init__(self, activation: str, mask_conv: bool):
+    def __init__(self, activation: str = 'hardtanh', mask_conv: bool = False):
         super(VGGExtractor, self).__init__(activation)
         self.mask_conv = mask_conv
         self.conv = nn.Sequential(
@@ -164,10 +159,5 @@ class VGGExtractor(CNNExtractor):
 
     def forward(self, inputs: Tensor, input_lengths: Tensor) -> Optional[Any]:
         if self.mask_conv:
-            conv_feat, seq_lengths = self.conv(inputs, input_lengths)
-            output = conv_feat, seq_lengths
-        else:
-            conv_feat = self.conv(inputs)
-            output = conv_feat
-
-        return output
+            return self.conv(inputs, input_lengths)
+        return self.conv(inputs)
