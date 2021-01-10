@@ -25,6 +25,10 @@ I will continue to add to this the speech recognition models that I implement.
 *Yuanyuan Zhao et al. [The SpeechTransformer for Large-scale Mandarin Chinese Speech Recognition](https://ieeexplore.ieee.org/document/8682586)*  
 *kaituoxu. [Speech-Transformer](https://github.com/kaituoxu/Speech-Transformer)*
   
+- Jasper  
+*Jason Li et al, [Jasper: An End-to-End Convolutional Neural Acoustic Model](https://arxiv.org/pdf/1904.03288.pdf)*  
+*NVIDIA. [DeepLearningExample](https://github.com/NVIDIA/DeepLearningExamples)*
+  
 - Voice Activity Detection (1 dimensional Resnet Model)   
 *filippogiruzzi. [voice_activity_detection](https://github.com/filippogiruzzi/voice_activity_detection)*
   
